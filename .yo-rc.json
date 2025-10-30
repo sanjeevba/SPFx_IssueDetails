@@ -1,0 +1,18 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "22.14.0",
+    "sdksVersions": {},
+    "version": "1.21.1",
+    "libraryName": "sp-fx-issue-details",
+    "libraryId": "2c6f6f84-4ba0-45b2-87a7-e2c7cf374e08",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "sp-fx-issue-details",
+    "solutionShortDescription": "sp-fx-issue-details description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

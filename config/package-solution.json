@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "sp-fx-issue-details-client-side-solution",
+    "id": "2c6f6f84-4ba0-45b2-87a7-e2c7cf374e08",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.21.1"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "sp-fx-issue-details description"
+      },
+      "longDescription": {
+        "default": "sp-fx-issue-details description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "sp-fx-issue-details Feature",
+        "description": "The feature that activates elements of the sp-fx-issue-details solution.",
+        "id": "618e073d-257d-4f95-86a8-32e25665921c",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/sp-fx-issue-details.sppkg"
+  }
+}
