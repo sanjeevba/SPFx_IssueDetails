@@ -14,6 +14,7 @@ import { ISpfxIssueDetailsProps } from './components/ISpfxIssueDetailsProps';
 
 export interface ISpfxIssueDetailsWebPartProps {
   description: string;
+  marketAccessIssueList: string;
 }
 
 export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfxIssueDetailsWebPartProps> {
@@ -26,6 +27,7 @@ export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfx
       SpfxIssueDetails,
       {
         description: this.properties.description,
+        marketAccessIssueList: this.properties.marketAccessIssueList,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
@@ -106,10 +108,11 @@ export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfx
           },
           groups: [
             {
-              groupName: strings.BasicGroupName,
+              groupName: 'Properties',
               groupFields: [
-                PropertyPaneTextField('description', {
-                  label: strings.DescriptionFieldLabel
+                PropertyPaneTextField('marketAccessIssueList', {
+                  label: 'Market Access Issue List',
+                  value: 'MA Issues'
                 })
               ]
             }

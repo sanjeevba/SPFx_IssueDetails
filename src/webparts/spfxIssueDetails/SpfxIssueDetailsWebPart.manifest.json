@@ -22,7 +22,8 @@
     "description": { "default": "SPFX_IssueDetails description" },
     "officeFabricIconFontName": "Page",
     "properties": {
-      "description": "SPFX_IssueDetails"
+      "description": "SPFX_IssueDetails",
+      "marketAccessIssueList": "MA Issues"
     }
   }]
 }
