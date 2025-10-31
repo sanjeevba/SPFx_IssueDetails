@@ -15,6 +15,59 @@ import { Scatter } from 'react-chartjs-2';
 import styles from './SpfxIssueDetails.module.scss';
 import type { ISpfxIssueDetailsProps } from './ISpfxIssueDetailsProps';
 
+// Define watermark plugin
+const watermarkPlugin = {
+  id: 'watermark',
+  afterDraw: (chart: any) => {
+    const ctx = chart.ctx;
+    const chartArea = chart.chartArea;
+    
+    if (!chartArea) return; // Guard against undefined chartArea
+    
+    // Calculate quadrant centers (each quadrant is 0-25 or 25-50)
+    // X-axis (Resolvability): 0-50, divided at 25
+    // Y-axis (Opportunity): 0-50, divided at 25
+    
+    // Quadrant 1 (top-right): Resolvability >= 25, Opportunity >= 25
+    const q1X = chartArea.left + (chartArea.right - chartArea.left) * 0.75; // 37.5 on axis = 75% of chart width
+    const q1Y = chartArea.top + (chartArea.bottom - chartArea.top) * 0.25; // 12.5 on axis = 25% from top
+    
+    // Quadrant 2 (top-left): Resolvability < 25, Opportunity >= 25
+    const q2X = chartArea.left + (chartArea.right - chartArea.left) * 0.25; // 12.5 on axis = 25% of chart width
+    const q2Y = chartArea.top + (chartArea.bottom - chartArea.top) * 0.25; // 12.5 on axis = 25% from top
+    
+    // Quadrant 3 (bottom-left): Resolvability < 25, Opportunity < 25
+    const q3X = chartArea.left + (chartArea.right - chartArea.left) * 0.25; // 12.5 on axis = 25% of chart width
+    const q3Y = chartArea.top + (chartArea.bottom - chartArea.top) * 0.75; // 37.5 on axis = 75% from top
+    
+    // Quadrant 4 (bottom-right): Resolvability >= 25, Opportunity < 25
+    const q4X = chartArea.left + (chartArea.right - chartArea.left) * 0.75; // 37.5 on axis = 75% of chart width
+    const q4Y = chartArea.top + (chartArea.bottom - chartArea.top) * 0.75; // 37.5 on axis = 75% from top
+    
+    // Save context and set text properties
+    ctx.save();
+    ctx.font = 'bold 14px Arial';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    // Draw watermarks
+    // Quadrant 1: High Resolvability, High Opportunity
+    ctx.fillText('1 - High Priority', q1X, q1Y);
+       
+    // Quadrant 2: Low Resolvability, High Opportunity
+    ctx.fillText('2O - Big Impact', q2X, q2Y);
+   
+    // Quadrant 3: Low Resolvability, Low Opportunity
+    ctx.fillText('3 - Low Priority', q3X, q3Y);
+        
+    // Quadrant 4: High Resolvability, Low Opportunity
+    ctx.fillText('2R - Quick Win', q4X, q4Y);
+        
+    ctx.restore();
+  }
+};
+
 // Register Chart.js components
 ChartJS.register(
   CategoryScale,
@@ -24,7 +77,8 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
+  watermarkPlugin
 );
 
 export interface IListItem {
