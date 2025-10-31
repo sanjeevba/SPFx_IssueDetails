@@ -23,7 +23,8 @@
     "officeFabricIconFontName": "Page",
     "properties": {
       "description": "SPFX_IssueDetails",
-      "marketAccessIssueList": "MA Issue Tmp"
+      "marketAccessIssueList": "MA Issue Tmp",
+      "chartSize": 5
     }
   }]
 }

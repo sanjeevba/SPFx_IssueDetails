@@ -195,6 +195,7 @@ export default class SpfxIssueDetails extends React.Component<ISpfxIssueDetailsP
       responsive: true,
       maintainAspectRatio: true,
       aspectRatio: 1,
+      resizeDelay: 0,
       scales: {
         x: {
           type: 'linear' as const,
@@ -204,6 +205,16 @@ export default class SpfxIssueDetails extends React.Component<ISpfxIssueDetailsP
           title: {
             display: true,
             text: 'Resolvability'
+          },
+          ticks: {
+            stepSize: 25,
+            callback: function(value: any) {
+              // Only show labels at 0, 25, 50
+              if (value === 0 || value === 25 || value === 50) {
+                return value;
+              }
+              return '';
+            }
           },
           grid: {
             color: (context: any) => {
@@ -227,6 +238,16 @@ export default class SpfxIssueDetails extends React.Component<ISpfxIssueDetailsP
           title: {
             display: true,
             text: 'Opportunity'
+          },
+          ticks: {
+            stepSize: 25,
+            callback: function(value: any) {
+              // Only show labels at 0, 25, 50
+              if (value === 0 || value === 25 || value === 50) {
+                return value;
+              }
+              return '';
+            }
           },
           grid: {
             color: (context: any) => {
@@ -264,6 +285,22 @@ export default class SpfxIssueDetails extends React.Component<ISpfxIssueDetailsP
     };
   }
 
+  private _getChartSize = (): number => {
+    // Convert slider value (1-10) to chart width in pixels
+    // 1 = 380px, 10 = 1000px (largest)
+    const { chartSize } = this.props;
+    const minSize = 380;
+    const maxSize = 1000;
+    // Map 1-10 to 380-1000: subtract 1 to make it 0-9, then divide by 9 to normalize
+    return minSize + (((chartSize - 1) / 9) * (maxSize - minSize));
+  }
+
+  private _getInnerChartSize = (): number => {
+    // Calculate inner chart size accounting for padding (20px on each side = 40px total)
+    const containerSize = this._getChartSize();
+    return containerSize - 40; // Subtract padding
+  }
+
   public render(): React.ReactElement<ISpfxIssueDetailsProps> {
     const { marketAccessIssueList } = this.props;
     const { items, loading, error } = this.state;
@@ -285,6 +322,8 @@ export default class SpfxIssueDetails extends React.Component<ISpfxIssueDetailsP
     }
 
     const chartData = this._prepareChartData();
+    const containerWidth = this._getChartSize();
+    const chartWidth = this._getInnerChartSize();
 
     return (
       <section className={styles.spfxIssueDetails}>
@@ -318,22 +357,25 @@ export default class SpfxIssueDetails extends React.Component<ISpfxIssueDetailsP
         </table>
         
         {chartData.length > 0 && (
-          <div style={{ marginTop: '20px', padding: '20px', border: '1px solid #ddd', backgroundColor: '#fff' }}>
-            <Scatter
-              data={{
-                datasets: [
-                  {
-                    label: 'Items',
-                    data: chartData.map(point => ({ x: point.x, y: point.y, label: point.label })),
-                    pointBackgroundColor: chartData.map(point => point.backgroundColor),
-                    pointBorderColor: chartData.map(point => point.borderColor),
-                    pointRadius: 6,
-                    pointHoverRadius: 8
-                  }
-                ]
-              }}
-              options={this._getChartOptions()}
-            />
+          <div style={{ marginTop: '20px', padding: '20px', border: '1px solid #ddd', backgroundColor: '#fff', width: `${containerWidth}px`, marginLeft: 'auto', marginRight: 'auto', boxSizing: 'border-box' }}>
+            <div style={{ width: `${chartWidth}px`, height: `${chartWidth}px`, margin: '0 auto' }}>
+              <Scatter
+                key={`chart-${this.props.chartSize}`}
+                data={{
+                  datasets: [
+                    {
+                      label: 'Items',
+                      data: chartData.map(point => ({ x: point.x, y: point.y, label: point.label })),
+                      pointBackgroundColor: chartData.map(point => point.backgroundColor),
+                      pointBorderColor: chartData.map(point => point.borderColor),
+                      pointRadius: 6,
+                      pointHoverRadius: 8
+                    }
+                  ]
+                }}
+                options={this._getChartOptions()}
+              />
+            </div>
           </div>
         )}
       </section>

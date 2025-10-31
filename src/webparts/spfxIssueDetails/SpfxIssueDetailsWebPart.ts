@@ -3,7 +3,8 @@ import * as ReactDom from 'react-dom';
 import { Version } from '@microsoft/sp-core-library';
 import {
   type IPropertyPaneConfiguration,
-  PropertyPaneTextField
+  PropertyPaneTextField,
+  PropertyPaneSlider
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
@@ -15,6 +16,7 @@ import { ISpfxIssueDetailsProps } from './components/ISpfxIssueDetailsProps';
 export interface ISpfxIssueDetailsWebPartProps {
   description: string;
   marketAccessIssueList: string;
+  chartSize: number;
 }
 
 export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfxIssueDetailsWebPartProps> {
@@ -28,6 +30,7 @@ export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfx
       {
         description: this.properties.description,
         marketAccessIssueList: this.properties.marketAccessIssueList,
+        chartSize: this.properties.chartSize ?? 5,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
@@ -114,6 +117,13 @@ export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfx
                 PropertyPaneTextField('marketAccessIssueList', {
                   label: 'Market Access Issue List',
                   value: 'MA Issue Tmp'
+                }),
+                PropertyPaneSlider('chartSize', {
+                  label: 'Chart Size',
+                  min: 1,
+                  max: 10,
+                  value: this.properties.chartSize ?? 5,
+                  showValue: true
                 })
               ]
             }
