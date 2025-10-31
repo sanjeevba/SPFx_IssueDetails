@@ -1,3 +1,5 @@
+import { WebPartContext } from '@microsoft/sp-webpart-base';
+
 export interface ISpfxIssueDetailsProps {
   description: string;
   marketAccessIssueList: string;
@@ -5,4 +7,5 @@ export interface ISpfxIssueDetailsProps {
   environmentMessage: string;
   hasTeamsContext: boolean;
   userDisplayName: string;
+  context: WebPartContext;
 }

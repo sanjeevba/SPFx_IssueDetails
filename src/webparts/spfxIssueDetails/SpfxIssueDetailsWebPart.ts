@@ -31,7 +31,8 @@ export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfx
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
-        userDisplayName: this.context.pageContext.user.displayName
+        userDisplayName: this.context.pageContext.user.displayName,
+        context: this.context
       }
     );
 
@@ -112,7 +113,7 @@ export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfx
               groupFields: [
                 PropertyPaneTextField('marketAccessIssueList', {
                   label: 'Market Access Issue List',
-                  value: 'MA Issues'
+                  value: 'MA Issue Tmp'
                 })
               ]
             }
