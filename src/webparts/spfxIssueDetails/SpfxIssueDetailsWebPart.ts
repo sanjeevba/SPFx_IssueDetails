@@ -3,11 +3,12 @@ import * as ReactDom from "react-dom";
 import { Version } from "@microsoft/sp-core-library";
 import {
   type IPropertyPaneConfiguration,
-  PropertyPaneTextField,
+  PropertyPaneDropdown,
   PropertyPaneSlider,
 } from "@microsoft/sp-property-pane";
 import { BaseClientSideWebPart } from "@microsoft/sp-webpart-base";
 import { IReadonlyTheme } from "@microsoft/sp-component-base";
+import { SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http";
 
 import * as strings from "SpfxIssueDetailsWebPartStrings";
 import SpfxIssueDetails from "./components/SpfxIssueDetails";
@@ -22,6 +23,7 @@ export interface ISpfxIssueDetailsWebPartProps {
 export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfxIssueDetailsWebPartProps> {
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = "";
+  private _availableLists: { key: string; text: string }[] = [];
 
   private _getUrlParameter(paramName: string): string | null {
     const urlParams = new URLSearchParams(window.location.search);
@@ -122,6 +124,48 @@ export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfx
     return Version.parse("1.0");
   }
 
+  protected async loadPropertyPaneResources(): Promise<void> {
+    await this._fetchAvailableLists();
+  }
+
+  protected onPropertyPaneConfigurationStart(): void {
+    this._fetchAvailableLists()
+      .then(() => {
+        this.context.propertyPane.refresh();
+      })
+      .catch(() => {
+        // Error already logged in _fetchAvailableLists
+      });
+  }
+
+  private _fetchAvailableLists = async (): Promise<void> => {
+    try {
+      const webUrl = this.context.pageContext.web.absoluteUrl;
+      const listsUrl = `${webUrl}/_api/web/lists?$filter=Hidden eq false and BaseTemplate eq 100&$select=Id,Title&$orderby=Title`;
+
+      const response: SPHttpClientResponse =
+        await this.context.spHttpClient.get(
+          listsUrl,
+          SPHttpClient.configurations.v1
+        );
+
+      if (response.ok) {
+        const data = await response.json();
+        this._availableLists = (data.value || []).map(
+          (list: { Id: string; Title: string }) => ({
+            key: list.Title,
+            text: list.Title,
+          })
+        );
+      } else {
+        this._availableLists = [];
+      }
+    } catch (error) {
+      console.error("Error fetching lists:", error);
+      this._availableLists = [];
+    }
+  };
+
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
       pages: [
@@ -133,9 +177,13 @@ export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfx
             {
               groupName: "Properties",
               groupFields: [
-                PropertyPaneTextField("marketAccessIssueList", {
+                PropertyPaneDropdown("marketAccessIssueList", {
                   label: "Market Access Issue List",
-                  value: "MA Issue Tmp",
+                  options:
+                    this._availableLists.length > 0
+                      ? this._availableLists
+                      : [{ key: "", text: "Loading lists..." }],
+                  selectedKey: this.properties.marketAccessIssueList || "",
                 }),
                 PropertyPaneSlider("chartSize", {
                   label: "Chart Size",
