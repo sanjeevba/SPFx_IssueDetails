@@ -5,6 +5,8 @@ import {
   type IPropertyPaneConfiguration,
   PropertyPaneDropdown,
   PropertyPaneSlider,
+  PropertyPaneToggle,
+  PropertyPaneTextField,
 } from "@microsoft/sp-property-pane";
 import { BaseClientSideWebPart } from "@microsoft/sp-webpart-base";
 import { IReadonlyTheme } from "@microsoft/sp-component-base";
@@ -20,6 +22,11 @@ export interface ISpfxIssueDetailsWebPartProps {
   xAxisMeasure: string;
   yAxisMeasure: string;
   chartSize: number;
+  showWatermark: boolean;
+  topRightLabel: string;
+  topLeftLabel: string;
+  lowerRightLabel: string;
+  lowerLeftLabel: string;
 }
 
 export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfxIssueDetailsWebPartProps> {
@@ -44,6 +51,11 @@ export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfx
         xAxisMeasure: this.properties.xAxisMeasure || "",
         yAxisMeasure: this.properties.yAxisMeasure || "",
         chartSize: this.properties.chartSize ?? 5,
+        showWatermark: this.properties.showWatermark ?? true,
+        topRightLabel: this.properties.topRightLabel || "1 - High Priority",
+        topLeftLabel: this.properties.topLeftLabel || "2O - Big Impact",
+        lowerRightLabel: this.properties.lowerRightLabel || "2R - Quick Win",
+        lowerLeftLabel: this.properties.lowerLeftLabel || "3 - Low Priority",
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
         hasTeamsContext: !!this.context.sdks.microsoftTeams,
@@ -169,6 +181,11 @@ export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfx
           // Error already logged in _fetchNumericColumns
         });
     }
+
+    // If the watermark toggle changed, refresh to show/hide label fields
+    if (propertyPath === "showWatermark") {
+      this.context.propertyPane.refresh();
+    }
   }
 
   private _fetchAvailableLists = async (): Promise<void> => {
@@ -292,6 +309,34 @@ export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfx
                   value: this.properties.chartSize ?? 5,
                   showValue: true,
                 }),
+                PropertyPaneToggle("showWatermark", {
+                  label: "Show Watermark",
+                  checked: this.properties.showWatermark ?? true,
+                }),
+                ...(this.properties.showWatermark ?? true
+                  ? [
+                      PropertyPaneTextField("topRightLabel", {
+                        label: "Top Right Label",
+                        value:
+                          this.properties.topRightLabel || "1 - High Priority",
+                      }),
+                      PropertyPaneTextField("topLeftLabel", {
+                        label: "Top Left Label",
+                        value:
+                          this.properties.topLeftLabel || "2O - Big Impact",
+                      }),
+                      PropertyPaneTextField("lowerRightLabel", {
+                        label: "Lower Right Label",
+                        value:
+                          this.properties.lowerRightLabel || "2R - Quick Win",
+                      }),
+                      PropertyPaneTextField("lowerLeftLabel", {
+                        label: "Lower Left Label",
+                        value:
+                          this.properties.lowerLeftLabel || "3 - Low Priority",
+                      }),
+                    ]
+                  : []),
               ],
             },
           ],

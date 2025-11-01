@@ -19,6 +19,18 @@ import type { ISpfxIssueDetailsProps } from "./ISpfxIssueDetailsProps";
 const watermarkPlugin = {
   id: "watermark",
   afterDraw: (chart: any) => {
+    // Check if watermark should be shown from chart options
+    const showWatermark = chart.options?.plugins?.watermark?.enabled !== false;
+
+    if (!showWatermark) return;
+
+    // Get labels from chart options
+    const labels = chart.options?.plugins?.watermark?.labels || {};
+    const topRightLabel = labels.topRight || "1 - High Priority";
+    const topLeftLabel = labels.topLeft || "2O - Big Impact";
+    const lowerRightLabel = labels.lowerRight || "2R - Quick Win";
+    const lowerLeftLabel = labels.lowerLeft || "3 - Low Priority";
+
     const ctx = chart.ctx;
     const chartArea = chart.chartArea;
 
@@ -51,18 +63,18 @@ const watermarkPlugin = {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    // Draw watermarks
-    // Quadrant 1: High Resolvability, High Opportunity
-    ctx.fillText("1 - High Priority", q1X, q1Y);
+    // Draw watermarks with dynamic labels
+    // Quadrant 1 (top-right)
+    ctx.fillText(topRightLabel, q1X, q1Y);
 
-    // Quadrant 2: Low Resolvability, High Opportunity
-    ctx.fillText("2O - Big Impact", q2X, q2Y);
+    // Quadrant 2 (top-left)
+    ctx.fillText(topLeftLabel, q2X, q2Y);
 
-    // Quadrant 3: Low Resolvability, Low Opportunity
-    ctx.fillText("3 - Low Priority", q3X, q3Y);
+    // Quadrant 3 (bottom-left)
+    ctx.fillText(lowerLeftLabel, q3X, q3Y);
 
-    // Quadrant 4: High Resolvability, Low Opportunity
-    ctx.fillText("2R - Quick Win", q4X, q4Y);
+    // Quadrant 4 (bottom-right)
+    ctx.fillText(lowerRightLabel, q4X, q4Y);
 
     ctx.restore();
   },
@@ -118,6 +130,10 @@ export default class SpfxIssueDetails extends React.Component<
       prevProps.yAxisMeasure !== this.props.yAxisMeasure
     ) {
       void this._fetchListItems();
+    }
+    // Force chart update if watermark setting changed
+    if (prevProps.showWatermark !== this.props.showWatermark) {
+      this.forceUpdate();
     }
   }
 
@@ -246,7 +262,15 @@ export default class SpfxIssueDetails extends React.Component<
   };
 
   private _getChartOptions = () => {
-    const { xAxisMeasure, yAxisMeasure } = this.props;
+    const {
+      xAxisMeasure,
+      yAxisMeasure,
+      showWatermark,
+      topRightLabel,
+      topLeftLabel,
+      lowerRightLabel,
+      lowerLeftLabel,
+    } = this.props;
 
     // Get field titles for display (fallback to internal name)
     const xAxisLabel = this._getFieldDisplayName(xAxisMeasure);
@@ -341,6 +365,15 @@ export default class SpfxIssueDetails extends React.Component<
               const point = context.raw;
               return `${point.label || "Item"}: (${point.x}, ${point.y})`;
             },
+          },
+        },
+        watermark: {
+          enabled: showWatermark,
+          labels: {
+            topRight: topRightLabel,
+            topLeft: topLeftLabel,
+            lowerRight: lowerRightLabel,
+            lowerLeft: lowerLeftLabel,
           },
         },
       },

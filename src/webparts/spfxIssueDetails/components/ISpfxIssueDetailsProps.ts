@@ -6,6 +6,11 @@ export interface ISpfxIssueDetailsProps {
   xAxisMeasure: string;
   yAxisMeasure: string;
   chartSize: number;
+  showWatermark: boolean;
+  topRightLabel: string;
+  topLeftLabel: string;
+  lowerRightLabel: string;
+  lowerLeftLabel: string;
   isDarkTheme: boolean;
   environmentMessage: string;
   hasTeamsContext: boolean;
