@@ -103,7 +103,7 @@ export default class SpfxIssueDetails extends React.Component<
   }
 
   public componentDidMount(): void {
-    this._fetchListItems();
+    void this._fetchListItems();
 
     // Log the ID parameter for debugging (optional)
     if (this.props.idFromUrl) {
@@ -113,7 +113,7 @@ export default class SpfxIssueDetails extends React.Component<
 
   public componentDidUpdate(prevProps: ISpfxIssueDetailsProps): void {
     if (prevProps.marketAccessIssueList !== this.props.marketAccessIssueList) {
-      this._fetchListItems();
+      void this._fetchListItems();
     }
   }
 
