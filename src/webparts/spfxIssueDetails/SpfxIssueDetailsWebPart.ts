@@ -17,6 +17,8 @@ import { ISpfxIssueDetailsProps } from "./components/ISpfxIssueDetailsProps";
 export interface ISpfxIssueDetailsWebPartProps {
   description: string;
   marketAccessIssueList: string;
+  xAxisMeasure: string;
+  yAxisMeasure: string;
   chartSize: number;
 }
 
@@ -24,6 +26,7 @@ export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfx
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = "";
   private _availableLists: { key: string; text: string }[] = [];
+  private _numericColumns: { key: string; text: string }[] = [];
 
   private _getUrlParameter(paramName: string): string | null {
     const urlParams = new URLSearchParams(window.location.search);
@@ -38,6 +41,8 @@ export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfx
       React.createElement(SpfxIssueDetails, {
         description: this.properties.description,
         marketAccessIssueList: this.properties.marketAccessIssueList,
+        xAxisMeasure: this.properties.xAxisMeasure || "",
+        yAxisMeasure: this.properties.yAxisMeasure || "",
         chartSize: this.properties.chartSize ?? 5,
         isDarkTheme: this._isDarkTheme,
         environmentMessage: this._environmentMessage,
@@ -136,6 +141,34 @@ export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfx
       .catch(() => {
         // Error already logged in _fetchAvailableLists
       });
+
+    // Fetch numeric columns if a list is selected
+    if (this.properties.marketAccessIssueList) {
+      this._fetchNumericColumns(this.properties.marketAccessIssueList)
+        .then(() => {
+          this.context.propertyPane.refresh();
+        })
+        .catch(() => {
+          // Error already logged in _fetchNumericColumns
+        });
+    }
+  }
+
+  protected onPropertyPaneFieldChanged(
+    propertyPath: string,
+    oldValue: any,
+    newValue: any
+  ): void {
+    // If the list selection changed, fetch the numeric columns for that list
+    if (propertyPath === "marketAccessIssueList" && newValue) {
+      this._fetchNumericColumns(newValue)
+        .then(() => {
+          this.context.propertyPane.refresh();
+        })
+        .catch(() => {
+          // Error already logged in _fetchNumericColumns
+        });
+    }
   }
 
   private _fetchAvailableLists = async (): Promise<void> => {
@@ -166,6 +199,41 @@ export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfx
     }
   };
 
+  private _fetchNumericColumns = async (listTitle: string): Promise<void> => {
+    if (!listTitle) {
+      this._numericColumns = [];
+      return;
+    }
+
+    try {
+      const webUrl = this.context.pageContext.web.absoluteUrl;
+      const listUrl = `${webUrl}/_api/web/lists/getbytitle('${encodeURIComponent(
+        listTitle
+      )}')/fields?$filter=ReadOnlyField eq false and Hidden eq false and (TypeAsString eq 'Number' or TypeAsString eq 'Currency' or TypeAsString eq 'Decimal')&$select=InternalName,Title&$orderby=Title`;
+
+      const response: SPHttpClientResponse =
+        await this.context.spHttpClient.get(
+          listUrl,
+          SPHttpClient.configurations.v1
+        );
+
+      if (response.ok) {
+        const data = await response.json();
+        this._numericColumns = (data.value || []).map(
+          (field: { InternalName: string; Title: string }) => ({
+            key: field.InternalName,
+            text: field.Title || field.InternalName,
+          })
+        );
+      } else {
+        this._numericColumns = [];
+      }
+    } catch (error) {
+      console.error("Error fetching numeric columns:", error);
+      this._numericColumns = [];
+    }
+  };
+
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
     return {
       pages: [
@@ -178,12 +246,44 @@ export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfx
               groupName: "Properties",
               groupFields: [
                 PropertyPaneDropdown("marketAccessIssueList", {
-                  label: "Market Access Issue List",
+                  label: "List name",
                   options:
                     this._availableLists.length > 0
                       ? this._availableLists
                       : [{ key: "", text: "Loading lists..." }],
                   selectedKey: this.properties.marketAccessIssueList || "",
+                }),
+                PropertyPaneDropdown("xAxisMeasure", {
+                  label: "X-Axis Measure",
+                  options:
+                    this._numericColumns.length > 0
+                      ? this._numericColumns
+                      : [
+                          {
+                            key: "",
+                            text: this.properties.marketAccessIssueList
+                              ? "Loading columns..."
+                              : "Select a list first",
+                          },
+                        ],
+                  selectedKey: this.properties.xAxisMeasure || "",
+                  disabled: !this.properties.marketAccessIssueList,
+                }),
+                PropertyPaneDropdown("yAxisMeasure", {
+                  label: "Y-Axis Measure",
+                  options:
+                    this._numericColumns.length > 0
+                      ? this._numericColumns
+                      : [
+                          {
+                            key: "",
+                            text: this.properties.marketAccessIssueList
+                              ? "Loading columns..."
+                              : "Select a list first",
+                          },
+                        ],
+                  selectedKey: this.properties.yAxisMeasure || "",
+                  disabled: !this.properties.marketAccessIssueList,
                 }),
                 PropertyPaneSlider("chartSize", {
                   label: "Chart Size",

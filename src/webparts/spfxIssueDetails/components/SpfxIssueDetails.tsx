@@ -112,13 +112,23 @@ export default class SpfxIssueDetails extends React.Component<
   }
 
   public componentDidUpdate(prevProps: ISpfxIssueDetailsProps): void {
-    if (prevProps.marketAccessIssueList !== this.props.marketAccessIssueList) {
+    if (
+      prevProps.marketAccessIssueList !== this.props.marketAccessIssueList ||
+      prevProps.xAxisMeasure !== this.props.xAxisMeasure ||
+      prevProps.yAxisMeasure !== this.props.yAxisMeasure
+    ) {
       void this._fetchListItems();
     }
   }
 
   private _fetchListItems = async (): Promise<void> => {
-    const { marketAccessIssueList, context, idFromUrl } = this.props;
+    const {
+      marketAccessIssueList,
+      context,
+      idFromUrl,
+      xAxisMeasure,
+      yAxisMeasure,
+    } = this.props;
 
     if (!marketAccessIssueList) {
       this.setState({
@@ -129,13 +139,23 @@ export default class SpfxIssueDetails extends React.Component<
       return;
     }
 
+    if (!xAxisMeasure || !yAxisMeasure) {
+      this.setState({
+        items: [],
+        loading: false,
+        error: "Please select X-Axis and Y-Axis measures",
+      });
+      return;
+    }
+
     this.setState({ loading: true, error: null });
 
     try {
       const webUrl = context.pageContext.web.absoluteUrl;
+      // Select dynamic fields instead of hardcoded ones
       let listUrl = `${webUrl}/_api/web/lists/getbytitle('${encodeURIComponent(
         marketAccessIssueList
-      )}')/items?$select=Id,Title,Resolvability,Opportunity`;
+      )}')/items?$select=Id,Title,${xAxisMeasure},${yAxisMeasure}`;
 
       // If ID is provided, filter by that specific item
       if (idFromUrl) {
@@ -182,17 +202,18 @@ export default class SpfxIssueDetails extends React.Component<
 
   private _prepareChartData = () => {
     const { items } = this.state;
+    const { xAxisMeasure, yAxisMeasure } = this.props;
 
-    // Filter items that have valid Resolvability and Opportunity values
+    // Filter items that have valid X and Y axis values
     const chartData = items
       .filter((item) => {
-        const resolvability = this._parseNumber(item.Resolvability);
-        const opportunity = this._parseNumber(item.Opportunity);
-        return resolvability !== null && opportunity !== null;
+        const xValue = this._parseNumber(item[xAxisMeasure]);
+        const yValue = this._parseNumber(item[yAxisMeasure]);
+        return xValue !== null && yValue !== null;
       })
       .map((item) => {
-        const x = this._parseNumber(item.Resolvability) as number;
-        const y = this._parseNumber(item.Opportunity) as number;
+        const x = this._parseNumber(item[xAxisMeasure]) as number;
+        const y = this._parseNumber(item[yAxisMeasure]) as number;
         const colors = this._getQuadrantColor(x, y);
         return {
           x: x,
@@ -214,7 +235,24 @@ export default class SpfxIssueDetails extends React.Component<
     return isNaN(num) ? null : num;
   };
 
+  private _getFieldDisplayName = (internalName: string): string => {
+    if (!internalName) return "";
+    // Convert internal name to display name (e.g., "Resolvability" -> "Resolvability")
+    // If it contains underscores, convert to title case
+    return internalName
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
   private _getChartOptions = () => {
+    const { xAxisMeasure, yAxisMeasure } = this.props;
+
+    // Get field titles for display (fallback to internal name)
+    const xAxisLabel = this._getFieldDisplayName(xAxisMeasure);
+    const yAxisLabel = this._getFieldDisplayName(yAxisMeasure);
+    const chartTitle = `${xAxisLabel} vs ${yAxisLabel}`;
+
     return {
       responsive: true,
       maintainAspectRatio: true,
@@ -228,7 +266,7 @@ export default class SpfxIssueDetails extends React.Component<
           max: 50,
           title: {
             display: true,
-            text: "Resolvability",
+            text: xAxisLabel,
           },
           ticks: {
             stepSize: 25,
@@ -261,7 +299,7 @@ export default class SpfxIssueDetails extends React.Component<
           max: 50,
           title: {
             display: true,
-            text: "Opportunity",
+            text: yAxisLabel,
           },
           ticks: {
             stepSize: 25,
@@ -292,7 +330,7 @@ export default class SpfxIssueDetails extends React.Component<
       plugins: {
         title: {
           display: true,
-          text: "Resolvability vs Opportunity",
+          text: chartTitle,
         },
         legend: {
           display: false,
@@ -326,8 +364,7 @@ export default class SpfxIssueDetails extends React.Component<
   };
 
   public render(): React.ReactElement<ISpfxIssueDetailsProps> {
-    const { marketAccessIssueList } = this.props;
-    const { items, loading, error } = this.state;
+    const { loading, error } = this.state;
 
     if (loading) {
       return (
@@ -351,90 +388,7 @@ export default class SpfxIssueDetails extends React.Component<
 
     return (
       <section className={styles.spfxIssueDetails}>
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            border: "1px solid #ddd",
-            marginBottom: "20px",
-          }}
-        >
-          <thead>
-            <tr style={{ backgroundColor: "#f2f2f2" }}>
-              <th
-                style={{
-                  padding: "12px",
-                  textAlign: "left",
-                  border: "1px solid #ddd",
-                }}
-              >
-                ID
-              </th>
-              <th
-                style={{
-                  padding: "12px",
-                  textAlign: "left",
-                  border: "1px solid #ddd",
-                }}
-              >
-                Title
-              </th>
-              <th
-                style={{
-                  padding: "12px",
-                  textAlign: "left",
-                  border: "1px solid #ddd",
-                }}
-              >
-                Resolvability
-              </th>
-              <th
-                style={{
-                  padding: "12px",
-                  textAlign: "left",
-                  border: "1px solid #ddd",
-                }}
-              >
-                Opportunity
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={4}
-                  style={{
-                    padding: "12px",
-                    border: "1px solid #ddd",
-                    textAlign: "center",
-                  }}
-                >
-                  No items found in list "{marketAccessIssueList}"
-                </td>
-              </tr>
-            ) : (
-              items.map((item) => (
-                <tr key={item.Id}>
-                  <td style={{ padding: "12px", border: "1px solid #ddd" }}>
-                    {item.Id}
-                  </td>
-                  <td style={{ padding: "12px", border: "1px solid #ddd" }}>
-                    {item.Title || "(No Title)"}
-                  </td>
-                  <td style={{ padding: "12px", border: "1px solid #ddd" }}>
-                    {item.Resolvability || "-"}
-                  </td>
-                  <td style={{ padding: "12px", border: "1px solid #ddd" }}>
-                    {item.Opportunity || "-"}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-
-        {chartData.length > 0 && (
+        {chartData.length > 0 ? (
           <div
             style={{
               marginTop: "20px",
@@ -479,6 +433,11 @@ export default class SpfxIssueDetails extends React.Component<
                 options={this._getChartOptions()}
               />
             </div>
+          </div>
+        ) : (
+          <div style={{ padding: "20px", textAlign: "center" }}>
+            No data available for chart. Please ensure X-Axis and Y-Axis
+            measures are selected and the list contains data.
           </div>
         )}
       </section>
