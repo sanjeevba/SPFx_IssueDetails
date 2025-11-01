@@ -1,4 +1,4 @@
-import { WebPartContext } from '@microsoft/sp-webpart-base';
+import { WebPartContext } from "@microsoft/sp-webpart-base";
 
 export interface ISpfxIssueDetailsProps {
   description: string;
@@ -9,4 +9,5 @@ export interface ISpfxIssueDetailsProps {
   hasTeamsContext: boolean;
   userDisplayName: string;
   context: WebPartContext;
+  idFromUrl?: string | null;
 }
