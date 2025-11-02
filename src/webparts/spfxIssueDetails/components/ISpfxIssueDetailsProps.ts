@@ -16,5 +16,5 @@ export interface ISpfxIssueDetailsProps {
   hasTeamsContext: boolean;
   userDisplayName: string;
   context: WebPartContext;
-  idFromUrl?: string | null;
+  idFromUrl?: string;
 }

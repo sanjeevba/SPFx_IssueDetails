@@ -2,6 +2,7 @@ import * as React from "react";
 import { SPHttpClient } from "@microsoft/sp-http";
 import {
   Chart as ChartJS,
+  type Chart,
   CategoryScale,
   LinearScale,
   PointElement,
@@ -15,17 +16,30 @@ import { Scatter } from "react-chartjs-2";
 import styles from "./SpfxIssueDetails.module.scss";
 import type { ISpfxIssueDetailsProps } from "./ISpfxIssueDetailsProps";
 
+// Define watermark plugin options type
+interface WatermarkPluginOptions {
+  enabled?: boolean;
+  labels?: {
+    topRight?: string;
+    topLeft?: string;
+    lowerRight?: string;
+    lowerLeft?: string;
+  };
+}
+
 // Define watermark plugin
 const watermarkPlugin = {
   id: "watermark",
-  afterDraw: (chart: any) => {
+  afterDraw: (chart: Chart) => {
     // Check if watermark should be shown from chart options
-    const showWatermark = chart.options?.plugins?.watermark?.enabled !== false;
+    const pluginOptions = (chart.options?.plugins as Record<string, unknown>)
+      ?.watermark as WatermarkPluginOptions | undefined;
+    const showWatermark = pluginOptions?.enabled !== false;
 
     if (!showWatermark) return;
 
     // Get labels from chart options
-    const labels = chart.options?.plugins?.watermark?.labels || {};
+    const labels = pluginOptions?.labels || {};
     const topRightLabel = labels.topRight || "1 - High Priority";
     const topLeftLabel = labels.topLeft || "2O - Big Impact";
     const lowerRightLabel = labels.lowerRight || "2R - Quick Win";
@@ -103,14 +117,14 @@ export interface IListItem {
 
 export default class SpfxIssueDetails extends React.Component<
   ISpfxIssueDetailsProps,
-  { items: IListItem[]; loading: boolean; error: string | null }
+  { items: IListItem[]; loading: boolean; error: string | undefined }
 > {
   constructor(props: ISpfxIssueDetailsProps) {
     super(props);
     this.state = {
       items: [],
       loading: true,
-      error: null,
+      error: undefined,
     };
   }
 
@@ -164,7 +178,7 @@ export default class SpfxIssueDetails extends React.Component<
       return;
     }
 
-    this.setState({ loading: true, error: null });
+    this.setState({ loading: true, error: undefined });
 
     try {
       const webUrl = context.pageContext.web.absoluteUrl;
@@ -190,7 +204,11 @@ export default class SpfxIssueDetails extends React.Component<
       }
 
       const data = await response.json();
-      this.setState({ items: data.value || [], loading: false, error: null });
+      this.setState({
+        items: data.value || [],
+        loading: false,
+        error: undefined,
+      });
     } catch (error) {
       this.setState({ items: [], loading: false, error: error.message });
     }

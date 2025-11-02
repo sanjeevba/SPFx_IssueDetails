@@ -35,9 +35,9 @@ export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfx
   private _availableLists: { key: string; text: string }[] = [];
   private _numericColumns: { key: string; text: string }[] = [];
 
-  private _getUrlParameter(paramName: string): string | null {
+  private _getUrlParameter(paramName: string): string | undefined {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(paramName);
+    return urlParams.get(paramName) || undefined;
   }
 
   public render(): void {
