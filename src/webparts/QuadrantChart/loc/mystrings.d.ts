@@ -1,4 +1,4 @@
-declare interface ISpfxIssueDetailsWebPartStrings {
+declare interface IQuadrantChartWebPartStrings {
   PropertyPaneDescription: string;
   BasicGroupName: string;
   DescriptionFieldLabel: string;
@@ -13,7 +13,7 @@ declare interface ISpfxIssueDetailsWebPartStrings {
   UnknownEnvironment: string;
 }
 
-declare module 'SpfxIssueDetailsWebPartStrings' {
-  const strings: ISpfxIssueDetailsWebPartStrings;
+declare module "QuadrantChartWebPartStrings" {
+  const strings: IQuadrantChartWebPartStrings;
   export = strings;
 }

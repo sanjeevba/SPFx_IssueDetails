@@ -12,11 +12,11 @@ import { BaseClientSideWebPart } from "@microsoft/sp-webpart-base";
 import { IReadonlyTheme } from "@microsoft/sp-component-base";
 import { SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http";
 
-import * as strings from "SpfxIssueDetailsWebPartStrings";
-import SpfxIssueDetails from "./components/SpfxIssueDetails";
-import { ISpfxIssueDetailsProps } from "./components/ISpfxIssueDetailsProps";
+import * as strings from "QuadrantChartWebPartStrings";
+import QuadrantChart from "./components/QuadrantChart";
+import { IQuadrantChartProps } from "./components/IQuadrantChartProps";
 
-export interface ISpfxIssueDetailsWebPartProps {
+export interface IQuadrantChartWebPartProps {
   description: string;
   marketAccessIssueList: string;
   xAxisMeasure: string;
@@ -29,7 +29,7 @@ export interface ISpfxIssueDetailsWebPartProps {
   lowerLeftLabel: string;
 }
 
-export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfxIssueDetailsWebPartProps> {
+export default class QuadrantChartWebPart extends BaseClientSideWebPart<IQuadrantChartWebPartProps> {
   private _isDarkTheme: boolean = false;
   private _environmentMessage: string = "";
   private _availableLists: { key: string; text: string }[] = [];
@@ -44,8 +44,8 @@ export default class SpfxIssueDetailsWebPart extends BaseClientSideWebPart<ISpfx
     // Read the ID parameter from URL
     const idFromUrl = this._getUrlParameter("ID");
 
-    const element: React.ReactElement<ISpfxIssueDetailsProps> =
-      React.createElement(SpfxIssueDetails, {
+    const element: React.ReactElement<IQuadrantChartProps> =
+      React.createElement(QuadrantChart, {
         description: this.properties.description,
         marketAccessIssueList: this.properties.marketAccessIssueList,
         xAxisMeasure: this.properties.xAxisMeasure || "",

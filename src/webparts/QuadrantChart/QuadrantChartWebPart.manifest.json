@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
   "id": "e42f53d5-b11e-45c0-a808-1bcd9eb2e298",
-  "alias": "SpfxIssueDetailsWebPart",
+  "alias": "QuadrantChartWebPart",
   "componentType": "WebPart",
 
   "version": "*",
@@ -20,11 +20,11 @@
     {
       "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
       "group": { "default": "Advanced" },
-      "title": { "default": "SPFX_IssueDetails" },
-      "description": { "default": "SPFX_IssueDetails description" },
+      "title": { "default": "Quadrant Chart" },
+      "description": { "default": "Quadrant Chart description" },
       "officeFabricIconFontName": "Page",
       "properties": {
-        "description": "SPFX_IssueDetails",
+        "description": "Quadrant Chart",
         "marketAccessIssueList": "MA Issue Tmp",
         "chartSize": 5
       }

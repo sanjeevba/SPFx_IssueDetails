@@ -1,6 +1,6 @@
 import { WebPartContext } from "@microsoft/sp-webpart-base";
 
-export interface ISpfxIssueDetailsProps {
+export interface IQuadrantChartProps {
   description: string;
   marketAccessIssueList: string;
   xAxisMeasure: string;

@@ -2,17 +2,17 @@
   "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
   "version": "2.0",
   "bundles": {
-    "spfx-issue-details-web-part": {
+    "quadrant-chart-web-part": {
       "components": [
         {
-          "entrypoint": "./lib/webparts/spfxIssueDetails/SpfxIssueDetailsWebPart.js",
-          "manifest": "./src/webparts/spfxIssueDetails/SpfxIssueDetailsWebPart.manifest.json"
+          "entrypoint": "./lib/webparts/QuadrantChart/QuadrantChartWebPart.js",
+          "manifest": "./src/webparts/QuadrantChart/QuadrantChartWebPart.manifest.json"
         }
       ]
     }
   },
   "externals": {},
   "localizedResources": {
-    "SpfxIssueDetailsWebPartStrings": "lib/webparts/spfxIssueDetails/loc/{locale}.js"
+    "QuadrantChartWebPartStrings": "lib/webparts/QuadrantChart/loc/{locale}.js"
   }
 }

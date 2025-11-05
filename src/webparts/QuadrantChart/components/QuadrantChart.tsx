@@ -13,8 +13,8 @@ import {
   Filler,
 } from "chart.js";
 import { Scatter } from "react-chartjs-2";
-import styles from "./SpfxIssueDetails.module.scss";
-import type { ISpfxIssueDetailsProps } from "./ISpfxIssueDetailsProps";
+import styles from "./QuadrantChart.module.scss";
+import type { IQuadrantChartProps } from "./IQuadrantChartProps";
 
 // Define watermark plugin options type
 interface WatermarkPluginOptions {
@@ -115,11 +115,11 @@ export interface IListItem {
   [key: string]: any;
 }
 
-export default class SpfxIssueDetails extends React.Component<
-  ISpfxIssueDetailsProps,
+export default class QuadrantChart extends React.Component<
+  IQuadrantChartProps,
   { items: IListItem[]; loading: boolean; error: string | undefined }
 > {
-  constructor(props: ISpfxIssueDetailsProps) {
+  constructor(props: IQuadrantChartProps) {
     super(props);
     this.state = {
       items: [],
@@ -137,7 +137,7 @@ export default class SpfxIssueDetails extends React.Component<
     }
   }
 
-  public componentDidUpdate(prevProps: ISpfxIssueDetailsProps): void {
+  public componentDidUpdate(prevProps: IQuadrantChartProps): void {
     if (
       prevProps.marketAccessIssueList !== this.props.marketAccessIssueList ||
       prevProps.xAxisMeasure !== this.props.xAxisMeasure ||
@@ -414,7 +414,7 @@ export default class SpfxIssueDetails extends React.Component<
     return containerSize - 40; // Subtract padding
   };
 
-  public render(): React.ReactElement<ISpfxIssueDetailsProps> {
+  public render(): React.ReactElement<IQuadrantChartProps> {
     const { loading, error } = this.state;
 
     if (loading) {

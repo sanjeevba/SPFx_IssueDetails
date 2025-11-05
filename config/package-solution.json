@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
   "solution": {
-    "name": "sp-fx-issue-details-client-side-solution",
+    "name": "quadrant-chart-client-side-solution",
     "id": "2c6f6f84-4ba0-45b2-87a7-e2c7cf374e08",
     "version": "1.0.0.0",
     "includeClientSideAssets": true,
@@ -16,10 +16,10 @@
     },
     "metadata": {
       "shortDescription": {
-        "default": "sp-fx-issue-details description"
+        "default": "Quadrant Chart description"
       },
       "longDescription": {
-        "default": "sp-fx-issue-details description"
+        "default": "Quadrant Chart description"
       },
       "screenshotPaths": [],
       "videoUrl": "",
@@ -27,14 +27,14 @@
     },
     "features": [
       {
-        "title": "sp-fx-issue-details Feature",
-        "description": "The feature that activates elements of the sp-fx-issue-details solution.",
+        "title": "Quadrant Chart Feature",
+        "description": "The feature that activates elements of the Quadrant Chart solution.",
         "id": "618e073d-257d-4f95-86a8-32e25665921c",
         "version": "1.0.0.0"
       }
     ]
   },
   "paths": {
-    "zippedPackage": "solution/sp-fx-issue-details.sppkg"
+    "zippedPackage": "solution/quadrant-chart.sppkg"
   }
 }
