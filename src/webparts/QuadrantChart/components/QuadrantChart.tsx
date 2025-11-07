@@ -398,20 +398,14 @@ export default class QuadrantChart extends React.Component<
     };
   };
 
-  private _getChartSize = (): number => {
-    // Convert slider value (1-10) to chart width in pixels
-    // 1 = 380px, 10 = 1000px (largest)
+  private _getChartSizePercentage = (): number => {
+    // Convert slider value (1-10) to percentage of container width
+    // 1 = 40%, 10 = 100% (full width)
     const { chartSize } = this.props;
-    const minSize = 380;
-    const maxSize = 1000;
-    // Map 1-10 to 380-1000: subtract 1 to make it 0-9, then divide by 9 to normalize
-    return minSize + ((chartSize - 1) / 9) * (maxSize - minSize);
-  };
-
-  private _getInnerChartSize = (): number => {
-    // Calculate inner chart size accounting for padding (20px on each side = 40px total)
-    const containerSize = this._getChartSize();
-    return containerSize - 40; // Subtract padding
+    const minPercentage = 40;
+    const maxPercentage = 100;
+    // Map 1-10 to 40-100%: subtract 1 to make it 0-9, then divide by 9 to normalize
+    return minPercentage + ((chartSize - 1) / 9) * (maxPercentage - minPercentage);
   };
 
   public render(): React.ReactElement<IQuadrantChartProps> {
@@ -434,8 +428,7 @@ export default class QuadrantChart extends React.Component<
     }
 
     const chartData = this._prepareChartData();
-    const containerWidth = this._getChartSize();
-    const chartWidth = this._getInnerChartSize();
+    const chartSizePercentage = this._getChartSizePercentage();
 
     return (
       <section className={styles.spfxIssueDetails}>
@@ -446,7 +439,7 @@ export default class QuadrantChart extends React.Component<
               padding: "20px",
               border: "1px solid #ddd",
               backgroundColor: "#fff",
-              width: `${containerWidth}px`,
+              width: `${chartSizePercentage}%`,
               marginLeft: "auto",
               marginRight: "auto",
               boxSizing: "border-box",
@@ -454,8 +447,8 @@ export default class QuadrantChart extends React.Component<
           >
             <div
               style={{
-                width: `${chartWidth}px`,
-                height: `${chartWidth}px`,
+                width: "100%",
+                aspectRatio: "1",
                 margin: "0 auto",
               }}
             >

@@ -5,6 +5,8 @@
   padding: 1em;
   color: "[theme:bodyText, default: #323130]";
   color: var(--bodyText);
+  width: 100%;
+  max-width: 100%;
   &.teams {
     font-family: $ms-font-family-fallbacks;
   }
