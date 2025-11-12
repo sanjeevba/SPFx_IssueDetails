@@ -41,8 +41,8 @@ export default class QuadrantChartWebPart extends BaseClientSideWebPart<IQuadran
   }
 
   public render(): void {
-    // Read the ID parameter from URL
-    const idFromUrl = this._getUrlParameter("ID");
+    // Read the issueID parameter from URL
+    const idFromUrl = this._getUrlParameter("issueID");
 
     const element: React.ReactElement<IQuadrantChartProps> =
       React.createElement(QuadrantChart, {
